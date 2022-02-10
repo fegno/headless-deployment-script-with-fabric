@@ -40,8 +40,8 @@ def get_instance_ips():
     if you have only one system. you can simpley use localhost or its ip for that. 
     """
     return [
-        'ip-172-31-22-63.ap-south-1.compute.internal',          # master
-        'ip-172-31-21-222.ap-south-1.compute.internal',         # replica_01
+        os.getenv('MASTER_IP'), # master
+        os.getenv('REPLICA_IP'), # replica01
     ]
 
 
