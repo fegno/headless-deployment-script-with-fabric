@@ -1,7 +1,7 @@
 import os
 
 
-def activate(conn):
+def activate(shell):
 	pass
 	
 	
