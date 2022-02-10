@@ -2,30 +2,31 @@ import os
 import shutil
 import git_utils
 
+
 def generate_bkp_path(source_path):
     dir_name = source_path.rstrip('/').split('/')
     return os.path.join(source_path, '..', f'._{dir_name}_automated_bkp')
 
 
-
-	
 def drop_backup(backup_path):
-	print("dropping backing")
-	shell.run(f"rm -rf {backup_path};")
+    print("dropping backing")
+    shell.run(f"rm -rf {backup_path};")
 
 
 def backup_current_code(shell, source_path, backup_path):
-	print("backing up current code")
-	shell.run(f"cp {source_path} {backup_path};")
-	
+    print("backing up current code")
+    shell.run(f"cp {source_path} {backup_path};")
+
 
 def restore_from_backup(restore_to_path, restore_from_path):
-	print("dropping backing")
-	shell.run(f"rm -rf {restore_to_path};")
-	shell.run(f"cp -r  {restore_from_path} {restore_to_path};")
-	
+
+    print("dropping backing")
+    shell.run(f"rm -rf {restore_to_path};")
+    shell.run(f"cp -r  {restore_from_path} {restore_to_path};")
+
 
 def get_hosts(settings, get_instance_ips):
+
     """
     Returns a list of dictionaries which can be passed as keyword arguments
     to instantiate a `Connection`.
@@ -43,7 +44,6 @@ def get_hosts(settings, get_instance_ips):
     } for ip in ips]
 
 
-
 def provision(for_master, for_slave, is_master=True):
     return for_master if is_master else for_slave
 
@@ -54,8 +54,8 @@ def _deploy_(c, migrate=True, dependencies=True, collectstatic=False, django=Fal
     hosts = get_hosts(Settings, get_instance_ips)
     
     for index, host in enumerate(hosts):
-	    print(f"****** Deploying to host {index} at {host['host']} ******")
-	     is_master = index == 0
+        print(f"****** Deploying to host {index} at {host['host']} ******")
+        is_master = index == 0
         deploy_on_host(
             Connection(**host),
             migrate = provision( migrate, False, is_master=is_master),
@@ -65,24 +65,22 @@ def _deploy_(c, migrate=True, dependencies=True, collectstatic=False, django=Fal
             deploy_react = react_only or deploy_together,
             django_branch = django_branch,
             react_branch = react_branch,
-            meta = {
-		        "settings": Settings,
-
+            meta={
+                "settings": Settings,
             }
         )
         
 
-	
 def deploy_on_host(c, migrate, collectstatic, dependencies, deploy_django, deploy_react, django_branch, react_branch, meta=dict()):
     """
     Full deployment for a host, including migrations and collectstatic
 
     """
-    
+
     if deploy_django:
-	    _deploy_django()
+        _deploy_django()
     if deploy_react:
-	    _deploy_react()
+        _deploy_react()
 
 
 def _deploy_django(shell):
@@ -101,7 +99,7 @@ def _deploy_django(shell):
 	"""
     settings = meta.get('settings', {})
     
-    db_utils.backup_current_database(shell, settings=settings )
+    db_utils.backup_current_database(shell, settings=settings)
     
     backup_current_code(shell, source_path=settings.CLOUD_DIR, backup_path=settings.CLOUD_BKP_DIR)
     
@@ -109,9 +107,9 @@ def _deploy_django(shell):
     
     with shell.cd(settings.CLOUD_DIR):
         
-        git_utils.clear_and_checkout(shell, brnach=django_branch)
+        git_utils.clear_and_checkout(shell, branch=django_branch)
         
-        git_utils.pull(shell, brnach=django_branch)
+        git_utils.pull(shell, branch=django_branch)
               
         if dependencies:
             print("Installing dependencies...\n")
