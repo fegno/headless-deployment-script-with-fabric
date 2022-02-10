@@ -6,12 +6,14 @@ from lib import db_utils
 
 
 def get_hosts(settings, get_instance_ips):
+
     """
     Returns a list of dictionaries which can be passed as keyword arguments
     to instantiate a `Connection`.
     Example:
         >>> hosts = get_hosts()
         >>> c = Connection(**hosts[0])
+
     """
     ips = sorted(get_instance_ips())
     return [{
@@ -63,16 +65,17 @@ def deploy(shell, migrate=True, dependencies=True, collectstatic=False, backend=
         is_master = index == 0
         deploy_on_host(
             Connection(**host),
-            migrate=provision(migrate, False, is_master=is_master),
-            collectstatic=provision(collectstatic, False, is_master=is_master),
+            migrate=provision( migrate, False, is_master=is_master),
+            collectstatic=provision( collectstatic, False, is_master=is_master),
             dependencies=dependencies,
             deploy_django=django_only or deploy_together,
             deploy_react=react_only or deploy_together,
             django_branch=django_branch,
             react_branch=react_branch,
-            meta={"settings": Settings}
+            meta={
+                "settings": Settings,
+            }
         )
-
 
 def deploy_on_host(shell, migrate, collectstatic, dependencies, deploy_django, deploy_react, django_branch,
                    react_branch, meta=dict()):
