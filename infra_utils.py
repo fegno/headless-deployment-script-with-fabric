@@ -1,6 +1,9 @@
 import os
 import shutil
 import git_utils
+from fabric2 import Connection
+from config import Settings
+from fabfile import get_instance_ips
 
 
 def generate_bkp_path(source_path):
@@ -33,6 +36,7 @@ def get_hosts(settings, get_instance_ips):
     Example:
         >>> hosts = get_hosts()
         >>> c = Connection(**hosts[0])
+
     """
     ips = sorted(get_instance_ips())
     return [{
@@ -58,13 +62,13 @@ def _deploy_(c, migrate=True, dependencies=True, collectstatic=False, django=Fal
         is_master = index == 0
         deploy_on_host(
             Connection(**host),
-            migrate = provision( migrate, False, is_master=is_master),
-            collectstatic = provision( collectstatic, False, is_master=is_master),
-            dependencies = dependencies,
-            deploy_django = django_only or deploy_together,
-            deploy_react = react_only or deploy_together,
-            django_branch = django_branch,
-            react_branch = react_branch,
+            migrate=provision( migrate, False, is_master=is_master),
+            collectstatic=provision( collectstatic, False, is_master=is_master),
+            dependencies=dependencies,
+            deploy_django=django_only or deploy_together,
+            deploy_react=react_only or deploy_together,
+            django_branch=django_branch,
+            react_branch=react_branch,
             meta={
                 "settings": Settings,
             }
@@ -123,8 +127,8 @@ def _deploy_django(shell):
 
 
 def _deploy_react():
-	"""
-	####### NODEJS
+    """
+    ####### NODEJS
     # point 01 = backup current code base.
     # point 02 = git checkout changes
     # point 03 = npm install
