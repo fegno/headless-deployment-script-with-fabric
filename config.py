@@ -1,3 +1,5 @@
+
+
 class Settings:
     USERNAME = 'ubuntu'
     BASE_DIR = os.getenv('TARGET_DIRECTORY', f'/home/{USERNAME}/code/')
@@ -14,3 +16,9 @@ class Settings:
 
     PEM_FILE = f'/home/{USERNAME}/.ssh/shopprix-aws-key.pem'  # none for default.
     SSH_PASSPHRASE = None
+    PROJECT_NAME = os.getenv('PROJECT_NAME')
+    EXECUTABLE_PYTHON = '/home/ubuntu/envs/shopprix/bin/python'
+    EXECUTABLE_ENVIRONMENT_LOAD_SCRIPT_REACT = None
+
+    RESTART_BACKEND_SERVICE = 'sudo service shopprix restart'
+    RESTART_BACKEND_USER_SERVER = 'sudo service nginx restart'
