@@ -3,11 +3,11 @@ from fabric2 import Connection
 from fabric2.tasks import task
 from config import Settings
 
-from . import infra_utils
-from . import users_mannual
+from lib import infra_utils
+from lib import users_mannual
 
 from lib import users_mannual       # from __init__.py
-from . import infra_utils
+from lib import infra_utils
 
 
 def get_instance_ips():
