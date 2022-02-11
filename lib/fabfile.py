@@ -1,4 +1,5 @@
 import os
+import infra_utils
 from fabric2 import Connection
 from fabric2.tasks import task
 from config import Settings
@@ -11,7 +12,7 @@ import infra_utils
 from . import users_mannual
 
 from lib import users_mannual       # from __init__.py
-from . import infra_utils
+
 
 def get_instance_ips():
     """
@@ -43,7 +44,7 @@ def deploy(c, migrate=True, dependencies=True, collectstatic=False, django=False
     if help:
         return users_mannual()
 
-    infra_utls.deploy(
+    infra_utils.deploy(
         c,
         migrate=migrate, dependencies=dependencies, collectstatic=collectstatic, django=django, react=react,
         deploy_together=deploy_together, django_branch=django_branch, react_branch=react_branch, help=help,

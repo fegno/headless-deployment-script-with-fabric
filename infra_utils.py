@@ -3,6 +3,8 @@ import shutil
 from lib import git_utils
 from lib import code_utils
 from lib import db_utils
+from config import Settings
+from fabric2 import Connection
 
 
 def get_hosts(settings, get_instance_ips):
@@ -19,8 +21,8 @@ def get_hosts(settings, get_instance_ips):
     return [{
         'host': f"{Settings.USERNAME}@{ip}",
         'connect_kwargs': {
-            "passphrase": settings.SSH_PASSPHRASE,
-            'key_filename': settings.PEM_FILE
+            "passphrase": Settings.SSH_PASSPHRASE,
+            'key_filename': Settings.PEM_FILE
         },
     } for ip in ips]
 
@@ -65,8 +67,8 @@ def deploy(shell, migrate=True, dependencies=True, collectstatic=False, backend=
         is_master = index == 0
         deploy_on_host(
             Connection(**host),
-            migrate=provision( migrate, False, is_master=is_master),
-            collectstatic=provision( collectstatic, False, is_master=is_master),
+            migrate=provision(migrate, False, is_master=is_master),
+            collectstatic=provision(collectstatic, False, is_master=is_master),
             dependencies=dependencies,
             deploy_django=django_only or deploy_together,
             deploy_react=react_only or deploy_together,
@@ -76,6 +78,7 @@ def deploy(shell, migrate=True, dependencies=True, collectstatic=False, backend=
                 "settings": Settings,
             }
         )
+
 
 def deploy_on_host(shell, migrate, collectstatic, dependencies, deploy_django, deploy_react, django_branch,
                    react_branch, meta=dict()):
@@ -166,7 +169,7 @@ def _deploy_react(shell, react_branch, meta):
     # point 05 = restart nginx
     # point 06 = check health and reset if necessery
     """
-
+    settings = meta.get('settings', {})
     code_utils.drop_backup(backup_path=settings.REACT_DIR)
     code_utils.backup_current_code(shell, source_path=settings.REACT_DIR, backup_path=settings.REACT_BKP_DIR)
 

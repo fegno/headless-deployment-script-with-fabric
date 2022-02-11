@@ -22,3 +22,14 @@ fab deploy
 
 **INSPIRED FROM : [yoongkang](https://github.com/yoongkang/fabric-deployment/blob/master/fabfile.py)**
 
+**Requirements**
+
+You need to install ```fabric2```.The most recent version should work. It is mentioned the version in ```requirements.txt.```
+
+**Configuration**
+
+I've used environment variables to configure things like the username for the remote server, the target directory, etc.
+
+Feel free to modify those as you wish, they're near the top fabfile.py.
+
+I'm also using pipenv for package management on my servers, but if you don't use this, you can modify the commands yourself.
