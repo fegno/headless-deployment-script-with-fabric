@@ -1,3 +1,13 @@
+<<<<<<< HEAD:lib/fabfile.py
+=======
+import os
+from fabric2 import Connection
+from fabric2.tasks import task
+from config import Settings
+
+from lib import infra_utils
+from lib import users_mannual
+>>>>>>> b184ecf55b8cf2999c0e061234f8da8d4a4373ad:fabfile.py
 
 import node_utils
 import python_utils
@@ -5,6 +15,10 @@ import django_utils
 import infra_utils
 from fabric2.tasks import task
 from lib import users_mannual       # from __init__.py
+<<<<<<< HEAD:lib/fabfile.py
+=======
+from lib import infra_utils
+>>>>>>> b184ecf55b8cf2999c0e061234f8da8d4a4373ad:fabfile.py
 
 
 def get_instance_ips():

@@ -1,6 +1,8 @@
 # headless-deployment-script-with-fabric
 
+Hey There, 
 
+Install fabric to ubuntu using the command : ```sudo apt install fabric```.
 
 
 **USAGE:**
