@@ -2,14 +2,12 @@ import os
 # import node_utils
 # import python_utils
 # import django_utils
-# import infra_utils
+import infra_utils
 from config import Settings
 from fabric2.tasks import task
 from fabric2 import Connection
 
 from lib import users_mannual       # from __init__.py
-
-from lib import infra_utils
 
 
 def get_instance_ips():
