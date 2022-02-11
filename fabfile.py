@@ -1,7 +1,11 @@
+# !/usr/bin/python3
+"""
+This file documents 2 things.
+    * get_instance_ips - which returns list of ips of servers that need to be connected/
+    * deploy - fab command to deploy everything.
+
+"""
 import os
-# import node_utils
-# import python_utils
-# import django_utils
 import infra_utils
 from config import Settings
 from fabric2.tasks import task
@@ -32,6 +36,17 @@ def deploy(c, migrate=True, dependencies=True, collectstatic=False, django=False
     """
     Main command line task to deploy.
     This ensures validation and other primary checks. and call _deploy() to put in action.
+    use this script as :
+        fab deploy
+            --no-migrate : to disable migration.
+            --no-dependencies : to disable installation of dependencies.
+            --collectstatic : to collect the static files.
+            --django : to deploy django
+            --react : to deploy django
+            --deploy_together : to deploy them together.
+            --django_branch master : to choose master  branch for django to get deployed.
+            --react_branch master : to choose master branch for django to get deployed.
+            -- help to display user manual.
 
     Args:
         c: connection to local server.
@@ -54,12 +69,13 @@ def deploy(c, migrate=True, dependencies=True, collectstatic=False, django=False
         return None
 
     if help:
-        return users_mannual()
+        return users_mannual()deploy
 
     infra_utils.deploy(
         c,
         migrate=migrate, dependencies=dependencies, collectstatic=collectstatic, django=django, react=react,
         deploy_together=deploy_together, django_branch=django_branch, react_branch=react_branch, help=help,
+        get_instance_ips=get_instance_ips,
     )
 
 

@@ -41,7 +41,7 @@ def provision(for_master, for_slave, is_master=True):
     return for_master if is_master else for_slave
 
 
-def deploy(shell, migrate=True, dependencies=True, collectstatic=False, django=False, react=False,
+def deploy(shell, migrate=True, dependencies=True, collectstatic=False, django_only=False, react_only=False,
            deploy_together=False, django_branch='master', react_branch='master', **kwargs):
     """
     
@@ -50,8 +50,8 @@ def deploy(shell, migrate=True, dependencies=True, collectstatic=False, django=F
         migrate: bool. no it needs migration?
         dependencies: bool. no it needs to install dependencies?
         collectstatic: bool. no it needs to collect static files?
-        django: bool. weather to deploy django application or not.
-        react: bool. weather to deploy react application or not.
+        django_only: bool. weather to deploy django application or not.
+        react_only: bool. weather to deploy react application or not.
         deploy_together: bool. a shortcut to tell deploy both.
         django_branch: str. Branch name to get deployed.
         react_branch: str. Branch name to get deployed.
@@ -62,7 +62,7 @@ def deploy(shell, migrate=True, dependencies=True, collectstatic=False, django=F
     considered first connected server as primary server. and others as replica.
     This method will
     """
-    hosts = get_hosts(Settings, get_instance_ips)
+    hosts = get_hosts(Settings, kwargs['get_instance_ips'])
 
     for index, host in enumerate(hosts):
         print(f"****** Deploying to host {index} at {host['host']} ******")
