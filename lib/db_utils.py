@@ -14,7 +14,7 @@ def drop_backup(conn, db_name):
 	print("dropping backup completed!!")
 
 
-def restore_from_backup(conn, bkp_db_name, db_name ):
+def restore_from_backup(conn, bkp_db_name, db_name):
 	print("restoring database :", db_name)
 	print("restoring completed!!")
 	

@@ -2,16 +2,13 @@ import os
 from fabric2 import Connection
 from fabric2.tasks import task
 from config import Settings
-import db_utils
 
-import node_utils
-import python_utils
-import django_utils
-import infra_utls 
+from . import infra_utils
 from . import users_mannual
 
 from lib import users_mannual       # from __init__.py
 from . import infra_utils
+
 
 def get_instance_ips():
     """
@@ -21,6 +18,7 @@ def get_instance_ips():
     within AWS.
 
     if you have only one system. you can simpley use localhost or its ip for that.
+    Returns: None
     """
     return [
         'ip-172-31-22-63.ap-south-1.compute.internal',  # master
@@ -34,6 +32,21 @@ def deploy(c, migrate=True, dependencies=True, collectstatic=False, django=False
     """
     Main command line task to deploy.
     This ensures validation and other primary checks. and call _deploy() to put in action.
+
+    Args:
+        c: connection to local server.
+        migrate: bool. no it needs migration?
+        dependencies: bool. no it needs to install dependencies?
+        collectstatic: bool. no it needs to collect static files?
+        django: bool. weather to deploy django application or not.
+        react: bool. weather to deploy react application or not.
+        deploy_together: bool. a shortcut to tell deploy both.
+        django_branch: str. Branch name to get deployed.
+        react_branch: str. Branch name to get deployed.
+        help: to display user mannual
+
+    Returns: None
+
     """
     if not (django or react or deploy_together):
         print("You do not have selected which application to deploy.")

@@ -27,7 +27,7 @@ def get_hosts(settings, get_instance_ips):
 
 def provision(for_master, for_slave, is_master=True):
     """
-    
+    Chooses what have to be transferred in case of master or replica servers.
     Args:
         for_master: value for master node 
         for_slave: value for slave node
@@ -39,8 +39,8 @@ def provision(for_master, for_slave, is_master=True):
     return for_master if is_master else for_slave
 
 
-def deploy(shell, migrate=True, dependencies=True, collectstatic=False, backend=False, frontend=False, deploy_together=False,
-           django_branch='master', react_branch='master', help=False):
+def deploy(shell, migrate=True, dependencies=True, collectstatic=False, django=False, react=False,
+           deploy_together=False, django_branch='master', react_branch='master', **kwargs):
     """
     
     Args:
@@ -48,15 +48,17 @@ def deploy(shell, migrate=True, dependencies=True, collectstatic=False, backend=
         migrate: bool. no it needs migration?
         dependencies: bool. no it needs to install dependencies?
         collectstatic: bool. no it needs to collect static files?
-        backend:
-        frontend:
-        deploy_together: 
-        backend_branch:
-        frontend_branch:
-        help: 
+        django: bool. weather to deploy django application or not.
+        react: bool. weather to deploy react application or not.
+        deploy_together: bool. a shortcut to tell deploy both.
+        django_branch: str. Branch name to get deployed.
+        react_branch: str. Branch name to get deployed.
 
-    Returns:
+    Returns: None
 
+    This method moves through the hosts details. establish connection with each server,
+    considered first connected server as primary server. and others as replica.
+    This method will
     """
     hosts = get_hosts(Settings, get_instance_ips)
 
@@ -77,38 +79,62 @@ def deploy(shell, migrate=True, dependencies=True, collectstatic=False, backend=
             }
         )
 
+
 def deploy_on_host(shell, migrate, collectstatic, dependencies, deploy_django, deploy_react, django_branch,
                    react_branch, meta=dict()):
     """
-    Full deployment for a host, including migrations and collectstatic
+    Args:
+        shell: Connection object to connect to the shell.
+        migrate: bool. Weather migration have to be done or not.
+        collectstatic: bool. Weather static files  have to be collected or not.
+        dependencies: bool. weather to install dependencies for python or not.
+        deploy_django: bool. weather to deploy django or not.
+        deploy_react: bool. weather to deploy react or not.
+        django_branch: str. Branch name to get deployed.
+        react_branch: str. Branch name to get deployed.
+        meta: dict. meta contains context, to transport common data such as settings.
+
+    Returns: None
 
     """
-
     if deploy_django:
         _deploy_django(
-            shell, migrate=migrate, collectstatic=collectstatic, 
+            shell, migrate=migrate, collectstatic=collectstatic,
             dependencies=dependencies, django_branch=django_branch,
             meta=meta
         )
     if deploy_react:
         _deploy_react(
             shell, react_branch, meta=meta
-      )
+        )
 
 
 def _deploy_django(shell, migrate, collectstatic, dependencies, django_branch, meta):
     """
-        ###### DJANGO
-        # point 01 = Backup database
-        # point 02 = Copy Current code Base
-        # point 03 = check out changes
-        # point 04 = git pull origin branch
-        # point 05 - install dependencies
-        # point 06 = collectstatic
-        # point 07 = migrate
-        # point 08 = restart gunicorn
-        # point 09 = restart nginx
-        # point 10 = check health and reset if necessery
+
+    Args:
+        shell: Connection object to connect to the shell.
+        migrate: bool. Weather migration have to be done or not.
+        collectstatic: bool. Weather static files  have to be collected or not.
+        dependencies: bool. weather to install dependencies for python or not.
+        django_branch: str. Branch name to get deployed.
+        meta: dict. meta contains context, to transport common data such as settings.
+
+    Returns:
+        pass:
+
+    ORDER OF EXECUTION.
+    ###### DJANGO
+    # point 01 = Backup database
+    # point 02 = Copy Current code Base
+    # point 03 = check out changes
+    # point 04 = git pull origin branch
+    # point 05 - install dependencies
+    # point 06 = collectstatic
+    # point 07 = migrate
+    # point 08 = restart gunicorn
+    # point 09 = restart nginx
+    # point 10 = check health and reset if necessery
     """
     #  definition
     settings = meta.get('settings', {})
@@ -138,7 +164,7 @@ def _deploy_django(shell, migrate, collectstatic, dependencies, django_branch, m
 
             if collectstatic:
                 print("Running collectstatic...")
-                shell.run(f"{python} manage.py collectstatic")
+                shell.run(f"{python} manage.py collectstatic  --no-input")
 
             if meta['settings'].RESTART_BACKEND_SERVICE:
                 shell.run(meta['settings'].RESTART_BACKEND_SERVICE)
@@ -158,6 +184,15 @@ def _deploy_django(shell, migrate, collectstatic, dependencies, django_branch, m
 
 def _deploy_react(shell, react_branch, meta):
     """
+    This method helps to deploy react project in system connected at shell.
+    This assumes pm2 is used to deploy the NodeJS server.
+    Args:
+        shell: Connection object to connect to the shell.
+        react_branch: str. Branch name for react.
+        meta: meta contains context, to transport common data such as settings.
+    Returns:
+        None
+
     ####### NODEJS
     # point 01 = backup current code base.
     # point 02 = git checkout changes
@@ -170,21 +205,22 @@ def _deploy_react(shell, react_branch, meta):
     code_utils.drop_backup(backup_path=settings.REACT_DIR)
     code_utils.backup_current_code(shell, source_path=settings.REACT_DIR, backup_path=settings.REACT_BKP_DIR)
 
-    with shell.cd(settings.REACT_DIR):
-        try:
+    try:
+        with shell.cd(settings.REACT_DIR):
             shell.run(f"git pull origin {react_branch}")
             shell.run(f"pm2 stop {settings.PROJECT_NAME}")
             shell.run(f"npm i")
             shell.run(f"npm run build")
             shell.run(f"pm2 start npm --name={settings.PROJECT_NAME} -- start")
-        except  Exception as e:
-            shell.run(f"pm2 stop {settings.PROJECT_NAME}")
-            code_utils.restore_from_backup(restore_to_path=settings.REACT_DIR, restore_from_path=settings.REACT_BKP_DIR)
+    except Exception as e:
+        shell.run(f"pm2 stop {settings.PROJECT_NAME}")
+        code_utils.restore_from_backup(restore_to_path=settings.REACT_DIR, restore_from_path=settings.REACT_BKP_DIR)
+        with shell.cd(settings.REACT_DIR):
             shell.run(f"pm2 start npm --name={settings.PROJECT_NAME} -- start")
-        else:
-            # code_utils.drop_backup(backup_path=settings.REACT_DIR)
-            # code_utils.backup_current_code(shell, source_path=settings.REACT_DIR, backup_path=settings.REACT_BKP_DIR)
-            pass
+    else:
+        # code_utils.drop_backup(backup_path=settings.REACT_DIR)
+        # code_utils.backup_current_code(shell, source_path=settings.REACT_DIR, backup_path=settings.REACT_BKP_DIR)
+        pass
 
 
 
