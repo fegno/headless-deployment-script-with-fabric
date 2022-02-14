@@ -63,7 +63,7 @@ def deploy(shell, migrate=True, dependencies=True, collectstatic=False, django_o
     This method will
     """
     hosts = get_hosts(Settings, kwargs['get_instance_ips'])
-
+    print("hosts=", hosts)
     for index, host in enumerate(hosts):
         print(f"****** Deploying at {host['host']} ******")
         is_master = index == 0
