@@ -65,7 +65,7 @@ def deploy(shell, migrate=True, dependencies=True, collectstatic=False, django_o
     hosts = get_hosts(Settings, kwargs['get_instance_ips'])
 
     for index, host in enumerate(hosts):
-        print(f"****** Deploying to host {index} at {host['host']} ******")
+        print(f"****** Deploying at {host['host']} ******")
         is_master = index == 0
         deploy_on_host(
             Connection(**host),

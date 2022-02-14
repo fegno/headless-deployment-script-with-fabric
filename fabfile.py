@@ -45,9 +45,9 @@ def deploy(c, migrate=True, dependencies=True, collectstatic=False, django=False
             --collectstatic : to collect the static files.
             --django : to deploy django
             --react : to deploy django
-            --deploy_together : to deploy them together.
-            --django_branch master : to choose master  branch for django to get deployed.
-            --react_branch master : to choose master branch for django to get deployed.
+            --deploy-together : to deploy them together.
+            --django-branch master : to choose master  branch for django to get deployed.
+            --react-branch master : to choose master branch for django to get deployed.
             -- help to display user manual.
 
     Args:
@@ -68,11 +68,13 @@ def deploy(c, migrate=True, dependencies=True, collectstatic=False, django=False
     if help:
         return users_mannual()
 
+    print("command supporters...")
+    print(f"migrate={migrate}, dependencies={dependencies}, collectstatic={collectstatic}, django={django}, react={react}, deploy_together={deploy_together}, django_branch={django_branch}, react_branch={react_branch}, help={help}")
+
     if not (django or react or deploy_together):
         print("You do not have selected which application to deploy.")
-        print("please mention --django or --react or --deploy_together to proceeed! ")
+        print("please mention --django or --react or --deploy-together to proceeed! ")
         return None
-
     infra_utils.deploy(
         c,
         migrate=migrate, dependencies=dependencies, collectstatic=collectstatic, django=django, react=react,
