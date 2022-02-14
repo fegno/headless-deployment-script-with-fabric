@@ -25,8 +25,10 @@ def get_instance_ips():
     Returns: None
     """
     return [
-        'ip-172-31-22-63.ap-south-1.compute.internal',  # master
-        'ip-172-31-21-222.ap-south-1.compute.internal',  # replica_01
+        # 'ip-172-31-22-63.ap-south-1.compute.internal',  # master
+        # 'ip-172-31-21-222.ap-south-1.compute.internal',  # replica_01
+        "ec2-3-111-120-49.ap-south-1.compute.amazonaws.com",         # master
+        "ec2-13-232-208-97.ap-south-1.compute.amazonaws.com",        # replica_01
     ]
 
 
@@ -69,7 +71,7 @@ def deploy(c, migrate=True, dependencies=True, collectstatic=False, django=False
         return None
 
     if help:
-        return users_mannual()deploy
+        return users_mannual()
 
     infra_utils.deploy(
         c,
