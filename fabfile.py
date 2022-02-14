@@ -65,13 +65,13 @@ def deploy(c, migrate=True, dependencies=True, collectstatic=False, django=False
     Returns: None
 
     """
+    if help:
+        return users_mannual()
+
     if not (django or react or deploy_together):
         print("You do not have selected which application to deploy.")
         print("please mention --django or --react or --deploy_together to proceeed! ")
         return None
-
-    if help:
-        return users_mannual()
 
     infra_utils.deploy(
         c,

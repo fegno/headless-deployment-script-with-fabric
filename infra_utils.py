@@ -100,12 +100,14 @@ def deploy_on_host(shell, migrate, collectstatic, dependencies, deploy_django, d
 
     """
     if deploy_django:
+        print("Deploying Django..")
         _deploy_django(
             shell, migrate=migrate, collectstatic=collectstatic,
             dependencies=dependencies, django_branch=django_branch,
             meta=meta
         )
     if deploy_react:
+        print("Deploying React..")
         _deploy_react(
             shell, react_branch, meta=meta
         )
@@ -143,6 +145,7 @@ def _deploy_django(shell, migrate, collectstatic, dependencies, django_branch, m
     python = meta['settings'].EXECUTABLE_PYTHON
 
     # if exists
+    print("cleaning up old backup and creating new Backup db and code")
     db_utils.drop_backup(shell, db_name=settings.BACKUP_DB_NAME)
     code_utils.drop_backup(backup_path=settings.CLOUD_BKP_DIR)
 
